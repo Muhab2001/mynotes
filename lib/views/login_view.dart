@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import "package:firebase_auth/firebase_auth.dart";
+import 'dart:developer' as devtools show log;
 
 class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key);
@@ -37,7 +38,8 @@ class _LoginViewState extends State<LoginView> {
             enableSuggestions: false,
             autocorrect: false,
             keyboardType: TextInputType.emailAddress,
-            decoration: const InputDecoration(hintText: "Enter your email here"),
+            decoration:
+                const InputDecoration(hintText: "Enter your email here"),
           ),
           TextField(
             controller: _password,
@@ -51,14 +53,16 @@ class _LoginViewState extends State<LoginView> {
             onPressed: () async {
               final email = _email.text;
               final password = _password.text;
-    
+
               try {
                 final userCredential = await FirebaseAuth.instance
-                    .signInWithEmailAndPassword(email: email, password: password);
-                print(userCredential);
+                    .signInWithEmailAndPassword(
+                        email: email, password: password);
+                Navigator.of(context)
+                    .pushNamedAndRemoveUntil("/notes/", (route) => false);
               } catch (e) {
-                print("User does not exist");
-                print(e);
+                devtools.log("User does not exist");
+                devtools.log(e.toString());
               }
             },
             child: const Text("Login"),
