@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import "package:firebase_auth/firebase_auth.dart";
- import 'package:mynotes/constants/routes.dart';
+import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/utilities/show_error_dialog.dart';
 
 class LoginView extends StatefulWidget {
@@ -58,17 +58,24 @@ class _LoginViewState extends State<LoginView> {
               try {
                 await FirebaseAuth.instance.signInWithEmailAndPassword(
                     email: email, password: password);
-                Navigator.of(context)
-                    .pushNamedAndRemoveUntil(notesRoute, (route) => false);
+  // only navigate to main ui if user is verified
+                final user = FirebaseAuth.instance.currentUser;
+                if (user?.emailVerified ?? false) {
+                  Navigator.of(context)
+                      .pushNamedAndRemoveUntil(notesRoute, (route) => false);
+                } else {
+                  Navigator.of(context)
+                      .pushNamedAndRemoveUntil(verifyEmailRoute, (route) => false);
+                }
               } on FirebaseAuthException catch (e) {
                 if (e.code == "user-not-found") {
                   await showErrorDialog(context, "User not found");
                 } else if (e.code == "wrong-password") {
                   await showErrorDialog(context, "Wrong credentials");
                 } else {
-                  await showErrorDialog(context,  "Error ${e.code}");
+                  await showErrorDialog(context, "Error ${e.code}");
                 }
-              } catch (e){
+              } catch (e) {
                 await showErrorDialog(context, "Error ${e.toString()}");
               }
             },
@@ -85,5 +92,3 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 }
-
-
