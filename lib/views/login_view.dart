@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/services/auth/auth_exceptions.dart';
@@ -55,11 +57,12 @@ class _LoginViewState extends State<LoginView> {
             onPressed: () async {
               final email = _email.text;
               final password = _password.text;
-
+              log("trynna login");
               try {
                 await AuthService.firebase()
                     .login(email: email, password: password);
                 // only navigate to main ui if user is verified
+
                 final user = AuthService.firebase().currentUser;
                 if (user?.isEmailVerified ?? false) {
                   Navigator.of(context)
@@ -72,9 +75,7 @@ class _LoginViewState extends State<LoginView> {
                 await showErrorDialog(context, "User not found");
               } on WrongPasswordAuthException {
                 await showErrorDialog(context, "Wrong credentials");
-              } on GenericAuthException {
-                await showErrorDialog(context, "Authentication Error");
-              }  catch (e) {
+              } catch (e) {
                 await showErrorDialog(context, "Error ${e.toString()}");
               }
             },

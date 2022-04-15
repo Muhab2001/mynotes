@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:mynotes/services/auth/auth_user.dart';
 import "package:mynotes/services/auth/auth_provider.dart";
@@ -38,6 +40,7 @@ class FirebaseAuthProvider implements AuthProvider {
   @override
   AuthUser? get currentUser {
     final user = FirebaseAuth.instance.currentUser;
+    log(user.toString());
     if (user != null) {
       return AuthUser.fromFirebase(user);
     }
@@ -46,7 +49,6 @@ class FirebaseAuthProvider implements AuthProvider {
 
   @override
   Future<void> logOut() async {
-
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       await FirebaseAuth.instance.signOut();
@@ -58,6 +60,10 @@ class FirebaseAuthProvider implements AuthProvider {
   @override
   Future<AuthUser?> login(
       {required String email, required String password}) async {
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
     try {
       final user = currentUser;
       if (user != null) {
@@ -89,9 +95,8 @@ class FirebaseAuthProvider implements AuthProvider {
   }
 
   @override
-  Future<void> intialize() async{
-    
+  Future<void> intialize() async {
     await Firebase.initializeApp(
-          options: DefaultFirebaseOptions.currentPlatform);
+        options: DefaultFirebaseOptions.currentPlatform);
   }
 }
