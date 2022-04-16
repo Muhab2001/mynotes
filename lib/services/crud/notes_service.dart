@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:path/path.dart' show join;
@@ -116,8 +117,9 @@ class NotesService {
     }
   }
 
-  Future<DatabaseNote> createNote({required DatabaseUser owner}) async {
+  Future<DatabaseNote?> createNote({required DatabaseUser owner}) async {
     await _ensureDbIsOpen();
+
     final db = _getDatabaseOrThrow();
 
     final dbUser = await getUser(email: owner.email);
@@ -127,20 +129,24 @@ class NotesService {
     }
 
     const text = "";
+    final note;
+    try {
+      final noteId = await db.insert(noteTable, {
+        userIdColumn: owner.id,
+        textColumn: text,
+        isSyncedWithCloudColumn: 1,
+      });
+      note = DatabaseNote(
+          id: noteId, userId: owner.id, text: text, isSyncedWithCloud: true);
+      _notes.add(note);
+      _notesStreamContoller.add(_notes);
 
-    final noteId = await db.insert(noteTable, {
-      userIdColumn: owner.id,
-      textColumn: text,
-      isSyncedWithCloudColumn: 1,
-    });
+      return note;
+    } catch (e) {
+      log(e.toString());
+    }
 
-    final note = DatabaseNote(
-        id: noteId, userId: owner.id, text: text, isSyncedWithCloud: true);
-
-    _notes.add(note);
-    _notesStreamContoller.add(_notes);
-
-    return note;
+    return null;
   }
 
   Future<DatabaseUser> getUser({required String email}) async {
@@ -296,7 +302,7 @@ const userTable = "user";
 const idColumn = "id";
 const emailColumn = "email";
 const userIdColumn = "user_id";
-const textColumn = "textColumn";
+const textColumn = "text";
 const isSyncedWithCloudColumn = "is_synced_with_cloud";
 
 const createUserTable = '''
@@ -314,5 +320,6 @@ CREATE TABLE IF NOT EXISTS "note" (
 	"text"	TEXT,
 	"is_synced_with_cloud"	INTEGER NOT NULL DEFAULT 0,
 	FOREIGN KEY("user_id") REFERENCES "user"("id")
+  PRIMARY KEY("id" AUTOINCREMENT)
 );
 ''';
