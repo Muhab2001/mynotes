@@ -39,20 +39,26 @@ class FirebaseCloudStorage {
           )
           .get()
           .then(
-              (value) => value.docs.map((doc) => CloudNote.fromSnapshot(doc)));
+            (value) => value.docs.map((doc) => CloudNote.fromSnapshot(doc)),
+          );
     } catch (e) {
       throw CouldBNotGetAllNotesException();
     }
   }
 
-  void createNewNote({required String ownerUserID}) async {
-    await notes.add({ownerUserIdFieldName: ownerUserID, textFieldName: ""});
+  Future<CloudNote> createNewNote({required String ownerUserID}) async {
+    final document =
+        await notes.add({ownerUserIdFieldName: ownerUserID, textFieldName: ""});
+    final fetchedNote = await document.get();
+    return CloudNote(
+      documentId: fetchedNote.id,
+      ownerUserID: ownerUserID,
+      text: "",
+    );
   }
 
   static final FirebaseCloudStorage _shared =
       FirebaseCloudStorage._sharedInstance();
-
   FirebaseCloudStorage._sharedInstance();
-
   factory FirebaseCloudStorage() => _shared;
 }
