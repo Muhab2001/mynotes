@@ -16,7 +16,7 @@ class NotesView extends StatefulWidget {
 
 class _NotesViewState extends State<NotesView> {
   late final NotesService _notesService;
-  String get userEmail => AuthService.firebase().currentUser!.email!;
+  String get userEmail => AuthService.firebase().currentUser!.email;
 
   @override
   void initState() {
@@ -65,7 +65,7 @@ class _NotesViewState extends State<NotesView> {
                     children: [
                       const Text('Log out'),
                       IconButton(
-                        onPressed: () {},
+                        onPressed: () {}, // TODO: check for the correctness
                         icon: const Icon(Icons.delete),
                       )
                     ],
