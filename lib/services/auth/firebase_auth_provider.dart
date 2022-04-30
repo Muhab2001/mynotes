@@ -61,11 +61,11 @@ class FirebaseAuthProvider implements AuthProvider {
   @override
   Future<AuthUser?> login(
       {required String email, required String password}) async {
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
     try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
       final user = currentUser;
       if (user != null) {
         return user;
@@ -73,6 +73,7 @@ class FirebaseAuthProvider implements AuthProvider {
         throw UserNotLoggedInAuthException();
       }
     } on FirebaseAuthException catch (e) {
+      log(e.code);
       if (e.code == "user-not-found") {
         throw UserNotFoundAuthException();
       } else if (e.code == "wrong-password") {

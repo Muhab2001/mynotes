@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart' show immutable;
 import 'package:mynotes/services/auth/auth_user.dart';
 
-// different possible states of our auth bloc
 @immutable
 abstract class AuthState {
   const AuthState();
@@ -13,14 +12,7 @@ class AuthStateLoading extends AuthState {
 
 class AuthStateLoggedIn extends AuthState {
   final AuthUser user;
-
   const AuthStateLoggedIn(this.user);
-}
-
-class AuthStateLoggedinFailure extends AuthState {
-  final Exception exception;
-
-  const AuthStateLoggedinFailure(this.exception);
 }
 
 class AuthStateNeedsVerification extends AuthState {
@@ -28,13 +20,11 @@ class AuthStateNeedsVerification extends AuthState {
 }
 
 class AuthStateLoggedOut extends AuthState {
-  const AuthStateLoggedOut();
+  final Exception? exception;
+  const AuthStateLoggedOut(this.exception);
 }
 
-class AuthStateLoggedOutFailure extends AuthState {
+class AuthStateLogoutFailure extends AuthState {
   final Exception exception;
-
-  const AuthStateLoggedOutFailure(this.exception);
+  const AuthStateLogoutFailure(this.exception);
 }
-
-

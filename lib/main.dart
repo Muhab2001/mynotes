@@ -1,7 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mynotes/constants/routes.dart';
-import 'package:mynotes/services/auth/auth_service.dart';
 import 'package:mynotes/services/auth/bloc/auth_bloc.dart';
 import 'package:mynotes/services/auth/bloc/auth_events.dart';
 import 'package:mynotes/services/auth/bloc/auth_state.dart';
@@ -40,7 +41,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // contacting events within the borders of our provider scope
-    context.read<AuthBloc>().add(const AuthEventIntialize());
+    context.read<AuthBloc>().add(const AuthEventInitialize());
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         if (state is AuthStateLoggedIn) {
@@ -51,7 +52,7 @@ class HomePage extends StatelessWidget {
           return const LoginView();
         } else {
           return const Scaffold(
-            body: CircularProgressIndicator(),
+            body: Center(child: CircularProgressIndicator()),
           );
         }
       },
