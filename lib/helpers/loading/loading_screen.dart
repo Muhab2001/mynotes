@@ -10,12 +10,12 @@ class LoadingScreen {
   LoadingScreen._sharedInstance();
 
   LoadingScreenController? controller;
-
+// hide the overlay and dispose the current controller
   void hide() {
     controller?.close();
     controller = null;
   }
-
+// display an overlay
   void show({required BuildContext context, required String text}) {
     // if the overlay already exists
     if (controller?.update(text) ?? false) {
@@ -25,7 +25,7 @@ class LoadingScreen {
       controller = showOverlay(context: context, text: text);
     }
   }
-
+// create the overlay
   LoadingScreenController showOverlay({
     required BuildContext context,
     required String text,
@@ -80,7 +80,7 @@ class LoadingScreen {
       },
     );
     state?.insert(overlay);
-
+  // specify the passed function
     return LoadingScreenController(close: () {
       _text.close();
       overlay.remove();
